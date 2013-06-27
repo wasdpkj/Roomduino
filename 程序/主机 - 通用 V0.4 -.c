@@ -4,7 +4,7 @@
 访问 http://creativecommons.org/licenses/by-nc-sa/3.0/ 查看该许可协议
 =================================
 
-github:https://github.com/Roomduino/Roomduino
+github:https://github.com/wasdpkj/Roomduino
 
 硬件：
 主机：MCU：MEGA644PA，网络芯片：ENC28J60，RJ45网口：HR911105A，2.4G无线：nRF24L01，显示屏：nokia5110/oled，红外接收头
