@@ -316,7 +316,7 @@ void setup()
 
   u8g.setRot180();
 
-  volcdsetup("Via PKJ  2013.6.30",10,15);
+  volcdsetup("Via PKJ",10,15);
   delay(2000);
 #ifdef DEVICE_Microduino
   volcdlogo(0,10);
@@ -1490,7 +1490,7 @@ void menu(void)
 
           int p=(millis() / 1000) % 2;
 
-          u8g.print("Via PKJ 2013.05")  ;
+          u8g.print("Via PKJ 2013.06")  ;
           u8g.setPrintPos(lcd_menu_basicX, lcd_menu_basicY + lcd_menu_basicYADD * 2);  
           u8g.print("Version 1.0")  ;
           u8g.setPrintPos(lcd_menu_basicX, lcd_menu_basicY + lcd_menu_basicYADD * 3);  
