@@ -470,8 +470,8 @@ void loop()
     }
     if(dht_ok)
     {
-      int dht_hum=(int)DHT11.humidity;
-      int dht_tem=(int)DHT11.temperature;
+      hum=(int)DHT11.humidity;
+      tem=(int)DHT11.temperature;
     }
   }
   /*====================end-DHT11================*/
