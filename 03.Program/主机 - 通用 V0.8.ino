@@ -10,10 +10,6 @@
  主机：MCU：MEGA644PA，网络芯片：ENC28J60，RJ45网口：HR911105A，2.4G无线：nRF24L01，显示屏：nokia5110/oled，红外接收头
  */
 
-//请先选择对应设备,对应引脚定义、显示设备及分辨率不同
-//#define DEVICE_Microduino   //选择设备,显示设备oled
-#define DEVICE_Arduino    //选择设备,显示设备5110
-
 #include <PKJ.h>
 
 #include <IRremote.h>
@@ -27,9 +23,13 @@
 
 PKJ pkj;
 
+
+//请先设置对应引脚定义、显示设备及分辨率不同
+//#define DEVICE_OLED   //显示设备oled
+#define DEVICE_5110LCD    //显示设备5110
+
 /*-----PIN------*/
 //---------------------------------
-#ifdef DEVICE_Microduino
 
 #define PIN_nrf_CE 9
 #define PIN_nrf_CSN 10
@@ -37,19 +37,6 @@ PKJ pkj;
 #define PIN_ir A2
 #define PIN_dht 18
 
-#endif
-//---------------------------------
-
-//---------------------------------
-#ifdef DEVICE_Arduino
-
-#define PIN_nrf_CE A5
-#define PIN_nrf_CSN A4
-#define PIN_enc_CS 3
-#define PIN_ir A3
-#define PIN_dht 18
-
-#endif
 //---------------------------------
 
 /*-----LCD------*/
@@ -68,7 +55,7 @@ font:
  */
 
 //---------------------------------
-#ifdef DEVICE_Microduino
+#ifdef DEVICE_OLED
 
 U8GLIB_SSD1306_128X64 u8g(U8G_I2C_OPT_NONE);	// HW SPI Com: CS = 10, A0 = 9 (Hardware Pins are  SCK = 13 and MOSI = 11)
 #define lcd_menu_basicX 5
@@ -84,7 +71,7 @@ U8GLIB_SSD1306_128X64 u8g(U8G_I2C_OPT_NONE);	// HW SPI Com: CS = 10, A0 = 9 (Har
 //---------------------------------
 
 //---------------------------------
-#ifdef DEVICE_Arduino
+#ifdef DEVICE_5110LCD
 
 U8GLIB_PCD8544 u8g(10, 7, 5, 6, 4);		// SPI Com: SCK = 13, MOSI = 11, CS = 10, A0 = 9, Reset = 8
 #define lcd_menu_basicX 5
@@ -318,7 +305,7 @@ void setup()
 
   volcdsetup("Via PKJ",10,15);
   delay(2000);
-#ifdef DEVICE_Microduino
+#ifdef DEVICE_OLED
   volcdlogo(0,10);
   delay(2000);
 #endif
@@ -1060,7 +1047,7 @@ static void my_result_cb (byte status, word off, word len)
 void draw(void)
 {
   //---------------------------------
-#ifdef DEVICE_Microduino
+#ifdef DEVICE_OLED
   setFont_L;
   //u8g.drawStr( 0, 18, "Hello!");
 
@@ -1156,7 +1143,7 @@ void draw(void)
 
 
   //---------------------------------
-#ifdef DEVICE_Arduino
+#ifdef DEVICE_5110LCD
   setFont_S;
   //u8g.drawStr( 0, 18, "Hello!");
 
@@ -1258,13 +1245,13 @@ void draw(void)
 void menu(void)
 {
   //---------------------------------
-#ifdef DEVICE_Microduino
+#ifdef DEVICE_OLED
   setFont_L;
 #endif
   //---------------------------------
 
   //---------------------------------
-#ifdef DEVICE_Arduino
+#ifdef DEVICE_5110LCD
   setFont_S;
 #endif
   //---------------------------------
