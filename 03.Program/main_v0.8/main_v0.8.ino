@@ -1,18 +1,14 @@
-﻿/*
+/*
 =================================
-本作品采用知识共享 署名-非商业性使用-相同方式共享 3.0 未本地化版本 许可协议进行许可
-访问 http://creativecommons.org/licenses/by-nc-sa/3.0/ 查看该许可协议
-=================================
-
-github:https://github.com/wasdpkj/Roomduino
-
-硬件：
-主机：MCU：MEGA644PA，网络芯片：ENC28J60，RJ45网口：HR911105A，2.4G无线：nRF24L01，显示屏：nokia5110/oled，红外接收头
+ 本作品采用知识共享 署名-非商业性使用-相同方式共享 3.0 未本地化版本 许可协议进行许可
+ 访问 http://creativecommons.org/licenses/by-nc-sa/3.0/ 查看该许可协议
+ =================================
+ 
+ github:https://github.com/wasdpkj/Roomduino
+ 
+ 硬件：
+ 主机：MCU：MEGA644PA，网络芯片：ENC28J60，RJ45网口：HR911105A，2.4G无线：nRF24L01，显示屏：nokia5110/oled，红外接收头
  */
-
-//请先选择对应设备,对应引脚定义、显示设备及分辨率不同
-#define DEVICE_Microduino   //选择设备,显示设备oled
-//#define DEVICE_Arduino    //选择设备,显示设备5110
 
 #include <PKJ.h>
 
@@ -27,29 +23,20 @@ github:https://github.com/wasdpkj/Roomduino
 
 PKJ pkj;
 
+
+//请先设置对应引脚定义、显示设备及分辨率不同
+#define DEVICE_OLED   //显示设备oled
+//#define DEVICE_5110LCD    //显示设备5110
+
 /*-----PIN------*/
 //---------------------------------
-#ifdef DEVICE_Microduino
-
-#define PIN_nrf_CE 9
-#define PIN_nrf_CSN 10
-#define PIN_enc_CS 8
-#define PIN_ir A2
-#define PIN_dht 18
-
-#endif
-//---------------------------------
-
-//---------------------------------
-#ifdef DEVICE_Arduino
 
 #define PIN_nrf_CE A5
 #define PIN_nrf_CSN A4
-#define PIN_enc_CS 3
+#define PIN_enc_CS 8
 #define PIN_ir A3
 #define PIN_dht 18
 
-#endif
 //---------------------------------
 
 /*-----LCD------*/
@@ -66,9 +53,9 @@ font:
  u8g.setFont(u8g_font_chikitar);
  u8g.setFont(u8g_font_osb21);
  */
- 
+
 //---------------------------------
-#ifdef DEVICE_Microduino
+#ifdef DEVICE_OLED
 
 U8GLIB_SSD1306_128X64 u8g(U8G_I2C_OPT_NONE);	// HW SPI Com: CS = 10, A0 = 9 (Hardware Pins are  SCK = 13 and MOSI = 11)
 #define lcd_menu_basicX 5
@@ -84,7 +71,7 @@ U8GLIB_SSD1306_128X64 u8g(U8G_I2C_OPT_NONE);	// HW SPI Com: CS = 10, A0 = 9 (Har
 //---------------------------------
 
 //---------------------------------
-#ifdef DEVICE_Arduino
+#ifdef DEVICE_5110LCD
 
 U8GLIB_PCD8544 u8g(10, 7, 5, 6, 4);		// SPI Com: SCK = 13, MOSI = 11, CS = 10, A0 = 9, Reset = 8
 #define lcd_menu_basicX 5
@@ -131,33 +118,33 @@ const unsigned char u8g_logo_bits[] U8G_PROGMEM = {
 
 
 #define lcd_delay 5		//屏幕刷新率，以循环为单位
-int lcd_show=0;
+unsigned int lcd_show=0;
 
 /*-----MENU-----*/
 boolean  KEY_MENU_enter = false, KEY_MENU_down1x = false, KEY_MENU_up1x = false, KEY_MENU_down10x = false, KEY_MENU_up10x = false;
 
-int MENU_xuan0, MENU_xuan1, MENU_xuan2, MENU_xuan3;
+unsigned int MENU_xuan0, MENU_xuan1, MENU_xuan2, MENU_xuan3;
 boolean MENU_xuan0sta, MENU_xuan1sta, MENU_xuan2sta, MENU_xuan3sta;
-int MENUnum0, MENUnum2;
-int MENUval = 0;
+unsigned int MENUnum0, MENUnum2;
+unsigned int MENUval = 0;
 
 boolean setmod = false;
 boolean MOD = false, MOD_TS;
-long MOD_TSmil;
+uint32_t MOD_TSmil;
 
-int tk=0;
+unsigned int tk=0;
 
 /*----EEPROM---*/
 #include <EEPROM.h>
-#define EEPROM_write(address, p) {int i = 0; byte *pp = (byte*)&(p);for(; i < sizeof(p); i++) EEPROM.write(address+i, pp[i]);}
-#define EEPROM_read(address, p)  {int i = 0; byte *pp = (byte*)&(p);for(; i < sizeof(p); i++) pp[i]=EEPROM.read(address+i);}
+#define EEPROM_write(address, p) {unsigned int i = 0; byte *pp = (byte*)&(p);for(; i < sizeof(p); i++) EEPROM.write(address+i, pp[i]);}
+#define EEPROM_read(address, p)  {unsigned int i = 0; byte *pp = (byte*)&(p);for(; i < sizeof(p); i++) pp[i]=EEPROM.read(address+i);}
 
 struct config_type
 {
-  int EEP_C_timesetshi[NUM];
-  int EEP_C_timesetfen[NUM];
-  int EEP_C_timesetdelay[NUM];
-  int EEP_C_dsset[NUM];
+  unsigned int EEP_C_timesetshi[NUM];
+  unsigned int EEP_C_timesetfen[NUM];
+  unsigned int EEP_C_timesetdelay[NUM];
+  unsigned int EEP_C_dsset[NUM];
   boolean EEP_C_timesta[NUM];
 };
 
@@ -168,15 +155,15 @@ static byte mymac[] =
 };									//MAC
 static byte myip[] =
 {
-  192, 168, 1, 121
+  192, 168, 2, 121
 };									//IP
 static byte gwip[] =
 {
-  192, 168, 1, 1
+  192, 168, 2, 1
 };									//网关
 static byte dnsip[] =
 {
-  192, 168, 1, 1
+  192, 168, 2, 1
 };
 
 byte Ethernet::buffer[900];
@@ -185,27 +172,27 @@ byte Ethernet::buffer[900];
 //YEELINK---------------------------------------------
 #define NET_YEE_request 1400 // milliseconds
 
-char website[] PROGMEM = "api.yeelink.net";
+PROGMEM char website[] = "api.yeelink.net";
 
-char urlBuf0[] PROGMEM = "/v1.0/device/xx/sensor/xx/";  //mod-switch
+prog_char urlBuf0[] = "/v1.0/device/682/sensor/4018/";  //mod-switch
 
-char urlBuf1[] PROGMEM = "/v1.0/device/xx/sensor/xx/";
-char urlBuf2[] PROGMEM = "/v1.0/device/xx/sensor/xx/";
-char urlBuf3[] PROGMEM = "/v1.0/device/xx/sensor/xx/";
-char urlBuf4[] PROGMEM = "/v1.0/device/xx/sensor/xx/";
+prog_char urlBuf1[] = "/v1.0/device/682/sensor/3669/";
+prog_char urlBuf2[] = "/v1.0/device/682/sensor/3670/";
+prog_char urlBuf3[] = "/v1.0/device/682/sensor/3673/";
+prog_char urlBuf4[] = "/v1.0/device/682/sensor/3674/";
 
-char urlBuf5[] PROGMEM = "/v1.0/device/xx/sensor/xx/";  //tem
-char urlBuf6[] PROGMEM = "/v1.0/device/xx/sensor/xx/";  //hum
+prog_char urlBuf5[] = "/v1.0/device/682/sensor/4903/";  //tem
+prog_char urlBuf6[] = "/v1.0/device/682/sensor/4902/";  //hum
 
-char apiKey[] PROGMEM = "U-ApiKey: xx";
+prog_char apiKey[]  = "U-ApiKey: f0644792058aed7c6c20f7fd30d8b7bd";
 
 boolean NET_REPLY = false;
 boolean NET_YEE_sw = false;
 
-int yee[NUM+1];
-int yeenum = 0;
+unsigned int yee[NUM+1];
+unsigned int yeenum = 0;
 
-static long NET_YEE_mil;
+uint32_t NET_YEE_mil;
 
 
 /*---SEND---*/
@@ -217,14 +204,14 @@ static long NET_YEE_mil;
 RF24 radio(PIN_nrf_CE, PIN_nrf_CSN); //设置24L01的CE和CSN引脚
 // Network uses that radio
 RF24Network network(radio);
-// Address of our node
-const uint16_t this_node = 1;
-// Address of the other node
-const uint16_t other_node = 0;
 // How often to send 'hello world to the other unit
-const unsigned long interval = 300; //ms
+#define interval 300 //ms
+// Address of our node
+#define this_node  1
+// Address of the other node
+#define other_node  0
 // When did we last send?
-unsigned long last_sent;
+uint32_t last_sent;
 
 struct send_a
 {
@@ -243,7 +230,7 @@ struct send_a
 #define TIME_OUT               10000
 #define TIME_REFRESH           300
 
-int timenian, timeyue, timeri, timeshi, timefen, timemiao, timezhou;  //时钟
+unsigned int timenian, timeyue, timeri, timeshi, timefen, timemiao, timezhou;  //时钟
 
 static int days_in_month[] =
 {
@@ -263,20 +250,20 @@ boolean NET_WEBSITE_sta;
 #define NET_TIME_INTERVAL                1000
 #define NET_CS           60000
 #define NET_RP           300000
-unsigned long TIME_cache = 0, TIME, NET_TIME_cs, NET_TIME_rp;
+uint32_t TIME_cache = 0, TIME, NET_TIME_cs, NET_TIME_rp;
 
 /*-------timing----*/
 boolean KEY_CH_up =  false, KEY_CH_down = false , KEY_CH_ok =  false; //定时2路
 
-long TIME_loop0,TIME_loop1;
+uint32_t TIME_loop0,TIME_loop1;
 
 /*-------dht11----*/
 #include <dht11.h>
 dht11 DHT11;
 
 #define dht11_delay 100
-int tem,hum;
-int dht11_read=0;
+unsigned int tem,hum;
+unsigned int dht11_read=0;
 boolean dht11_send=false;
 
 /*-------ir------*/
@@ -285,31 +272,31 @@ decode_results results;
 
 //===========VOL
 boolean C[NUM];
-int C_SW;
+unsigned int C_SW;
 //-------------------
-int C_timesetshi[NUM];
-int C_timesetfen[NUM];
-int C_timesetdelay[NUM];
+unsigned int C_timesetshi[NUM];
+unsigned int C_timesetfen[NUM];
+unsigned int C_timesetdelay[NUM];
 boolean C_timesta[NUM];
 
 boolean C_timedelaysta[NUM];
-long C_timemil[NUM];
+uint32_t C_timemil[NUM];
 //-------------------
-int C_dsset[NUM];
+unsigned int C_dsset[NUM];
 
 boolean C_dssta[NUM];
 boolean C_dsgo[NUM];
-int C_dslast[NUM];
-long C_dsmil[NUM];
+unsigned int C_dslast[NUM];
+uint32_t C_dsmil[NUM];
 
-int C_dssw = 0;
+unsigned int C_dssw = 0;
 //-------------------
-int light;      //风扇档位
-int mod[4];      //风扇档位
+unsigned int light;      //风扇档位
+unsigned int mod[4];      //风扇档位
 
 void setup()
 {
-  Serial.begin(9600);
+  Serial.begin(115200);
 
   digitalWrite(12, 1);
   delay(10);
@@ -318,7 +305,7 @@ void setup()
 
   volcdsetup("Via PKJ",10,15);
   delay(2000);
-#ifdef DEVICE_Microduino
+#ifdef DEVICE_OLED
   volcdlogo(0,10);
   delay(2000);
 #endif
@@ -330,7 +317,7 @@ void setup()
   config_type config_readback;
   EEPROM_read(0, config_readback);
 
-  for(int a = 0; a < NUM; a++) //循环几路算法
+  for(unsigned int a = 0; a < NUM; a++) //循环几路算法
   {
     C_timesetshi[a] = config_readback.EEP_C_timesetshi[a];
     C_timesetfen[a] = config_readback.EEP_C_timesetfen[a];
@@ -365,7 +352,7 @@ void setup()
 
     NET_WEBSITE_sta = false;
   }
-
+  
   volcdsetup("Load Net Time",10,15);
   delay(1000);
 
@@ -383,7 +370,7 @@ void setup()
     delay(1000);
   }
   /*
-      xx while (ether.clientWaitingGw())
+   while (ether.clientWaitingGw())
    ether.packetLoop(ether.packetReceive());
    */
   volcdsetup("Load nRF",10,15);
@@ -447,7 +434,7 @@ void loop()
   dht11_read=pkj.VOLtiaobian(dht11_read, 0, dht11_delay);
   if(dht11_read==dht11_delay)
   {
-	voDHT11();
+//    voDHT11();
   }
   /*====================end-DHT11================*/
 
@@ -686,14 +673,14 @@ void loop()
   if(!MOD)
   {
     /*================定时开启===================*/
-    for(int a = 0; a < NUM; a++) //循环几路算法
+    for(unsigned int a = 0; a < NUM; a++) //循环几路算法
     {
       C_timesetshi[a] = pkj.VOLtiaobian(C_timesetshi[a], 0, 23);
       C_timesetfen[a] = pkj.VOLtiaobian(C_timesetfen[a], 0, 59);
       C_timesetdelay[a] = pkj.VOLtiaobian(C_timesetdelay[a], 1, 360);
     }
 
-    for(int a = 0; a < NUM; a++) //触发
+    for(unsigned int a = 0; a < NUM; a++) //触发
     {
       if(!C_dssta[a] && C_timesta[a] == true && timeshi == C_timesetshi[a] && timefen == C_timesetfen[a] && timemiao == 1)		//没有在定时时，可触发
       {
@@ -704,7 +691,7 @@ void loop()
       }
     }
 
-    for(int a = 0; a < NUM; a++) //被触发时
+    for(unsigned int a = 0; a < NUM; a++) //被触发时
     {
       if(C_timedelaysta[a])
       {
@@ -734,7 +721,7 @@ void loop()
 
     C_dssw = pkj.VOLtiaobian(C_dssw, 0, 3);
 
-    for(int a = 0; a < NUM; a++) //循环几路算法
+    for(unsigned int a = 0; a < NUM; a++) //循环几路算法
     {
       C_dsset[a] = pkj.VOLtiaobian(C_dsset[a], 1, 90);
       C_dsgo[a] = false;
@@ -747,7 +734,7 @@ void loop()
       //C_timesta[C_dssw]=false
     }
 
-    for(int a = 0; a < NUM; a++) //倒计时
+    for(unsigned int a = 0; a < NUM; a++) //倒计时
     {
       if (C_dsgo[a] == true && (C_dssta[a] == false && C[a] == false))    //C[]为零时可触发计时
       {
@@ -809,7 +796,7 @@ void loop()
 
 void get_send_string(OUT char *p)
 {
-  int cache;
+  unsigned int cache;
 
   switch(dht11_send)
   {
@@ -827,7 +814,7 @@ void get_send_string(OUT char *p)
 
 void voir()
 {
-  unsigned long remote = results.value;   //设红外信号为remote
+  uint32_t remote = results.value;   //设红外信号为remote
 
     if(remote == (-1))    //溢出时
   {
@@ -948,7 +935,7 @@ void eeprom_test()
 {
   config_type config;     // 定义结构变量config，并定义config的内容
 
-  for(int a = 0; a < NUM; a++)
+  for(unsigned int a = 0; a < NUM; a++)
   {
     config.EEP_C_timesetshi[a] = C_timesetshi[a];
     config.EEP_C_timesetfen[a] = C_timesetfen[a];
@@ -960,7 +947,7 @@ void eeprom_test()
 }
 
 
-void voadd(int add)
+void voadd(unsigned int add)
 {
   if(add < 10)
   {
@@ -1029,7 +1016,7 @@ boolean isLeapYear(unsigned int year)
 
 void vonettime()
 {
-  long timeout = millis();    //超时时间
+  uint32_t timeout = millis();    //超时时间
   while(NET_TIME_reply == true && millis() - timeout < TIME_OUT)   //采集到或者超时时跳出
   {
     ether.packetLoop(ether.packetReceive());
@@ -1060,7 +1047,7 @@ static void my_result_cb (byte status, word off, word len)
 void draw(void)
 {
   //---------------------------------
-#ifdef DEVICE_Microduino
+#ifdef DEVICE_OLED
   setFont_L;
   //u8g.drawStr( 0, 18, "Hello!");
 
@@ -1069,7 +1056,7 @@ void draw(void)
 
   u8g.drawLine(0, 53,   127, 53);
 
-  for(int a = 0; a < NUM; a++) //循环几路算法
+  for(unsigned int a = 0; a < NUM; a++) //循环几路算法
   {
     u8g.setPrintPos(3, 11 + 13 * a);
     switch(a)
@@ -1102,7 +1089,7 @@ void draw(void)
 
   u8g.drawFrame(0, 0 + 13 * C_dssw, 128, 13);
 
-  for(int a = 0; a < NUM; a++) //循环几路算法
+  for(unsigned int a = 0; a < NUM; a++) //循环几路算法
   {
     u8g.setPrintPos(90, 11 + 13 * a);
     if(C_dssta[a])
@@ -1156,7 +1143,7 @@ void draw(void)
 
 
   //---------------------------------
-#ifdef DEVICE_Arduino
+#ifdef DEVICE_5110LCD
   setFont_S;
   //u8g.drawStr( 0, 18, "Hello!");
 
@@ -1166,7 +1153,7 @@ void draw(void)
   u8g.drawLine(0, 41,   83, 41);
 
 
-  for(int a = 0; a < NUM; a++) //设置时间上下限
+  for(unsigned int a = 0; a < NUM; a++) //设置时间上下限
   {
     u8g.setPrintPos(2, 8 + 10 * a);
     switch(a)
@@ -1201,7 +1188,7 @@ void draw(void)
 
   u8g.drawFrame(0, 0 + 10 * C_dssw, 83, 10);
 
-  for(int a = 0; a < NUM; a++) //设置时间上下限
+  for(unsigned int a = 0; a < NUM; a++) //设置时间上下限
   {
     u8g.setPrintPos(50, 8 + 10 * a);
     if(C_dssta[a])
@@ -1258,13 +1245,13 @@ void draw(void)
 void menu(void)
 {
   //---------------------------------
-#ifdef DEVICE_Microduino
+#ifdef DEVICE_OLED
   setFont_L;
 #endif
   //---------------------------------
 
   //---------------------------------
-#ifdef DEVICE_Arduino
+#ifdef DEVICE_5110LCD
   setFont_S;
 #endif
   //---------------------------------
@@ -1486,7 +1473,7 @@ void menu(void)
         {
           MENU_xuan2=0;
 
-          int p=(millis() / 1000) % 2;
+          unsigned int p=(millis() / 1000) % 2;
 
           u8g.print("Via PKJ 2013.06")  ;
           u8g.setPrintPos(lcd_menu_basicX, lcd_menu_basicY + lcd_menu_basicYADD * 2);  
@@ -1629,7 +1616,7 @@ void menu(void)
 
 void vomenu()
 {
-  int enter_cache = 0;						//缓存enter状态 防止连续触发
+  unsigned int enter_cache = 0;						//缓存enter状态 防止连续触发
 
   if(MENU_xuan0sta)							//进入初级菜单后
   {
@@ -1798,7 +1785,7 @@ void vosend()
      */
 
     send_a payloada = { 
-      millis(), C[0], C[1], C[2], C[3], C_SW                                                                                                                                                                                                            };
+      millis(), C[0], C[1], C[2], C[3], C_SW                                                                                                                                                                                                                    };
 
     RF24NetworkHeader header(/*to node*/ other_node);
     bool oka = network.write(header, &payloada, sizeof(payloada));
@@ -1810,14 +1797,14 @@ void vosend()
   }
 }  
 
-int freeRam () {
-  extern int __heap_start, *__brkval; 
-  int v; 
-  return (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval); 
+unsigned int freeRam () {
+  extern unsigned int __heap_start, *__brkval; 
+  unsigned int v; 
+  return (unsigned int) &v - (__brkval == 0 ? (unsigned int) &__heap_start : (unsigned int) __brkval); 
 }
 
 
-void volcdsetup(char* zi,int x,int y)
+void volcdsetup(char* zi,unsigned int x,unsigned int y)
 {
   u8g.firstPage();  
   do {
@@ -1828,7 +1815,7 @@ void volcdsetup(char* zi,int x,int y)
   while( u8g.nextPage() );
 }
 
-void volcdlogo(int x,int y)
+void volcdlogo(unsigned int x,unsigned int y)
 {
   u8g.firstPage();  
   do {
@@ -1839,30 +1826,31 @@ void volcdlogo(int x,int y)
 
 void voDHT11()
 {
-	boolean dht_ok;
-	int chk = DHT11.read(PIN_dht);
-	switch (chk)
-	{
-	case DHTLIB_OK:
-	  dht_ok=true;
-	  Serial.println("OK"); 
-	  break;
-	case DHTLIB_ERROR_CHECKSUM:
-	  dht_ok=false;
-	  Serial.println("Checksum error"); 
-	  break;
-	case DHTLIB_ERROR_TIMEOUT:
-	  dht_ok=false;
-	  Serial.println("Time out error"); 
-	  break;
-	default:
-	  dht_ok=false;
-	  Serial.println("Unknown error"); 
-	  break;
-	}
-	if(dht_ok)
-	{
-	  hum=(int)DHT11.humidity;
-	  tem=(int)DHT11.temperature;
-	}
+  boolean dht_ok;
+  unsigned int chk = DHT11.read(PIN_dht);
+  switch (chk)
+  {
+  case DHTLIB_OK:
+    dht_ok=true;
+    //Serial.println("OK"); 
+    break;
+  case DHTLIB_ERROR_CHECKSUM:
+    dht_ok=false;
+    //Serial.println("Checksum error"); 
+    break;
+  case DHTLIB_ERROR_TIMEOUT:
+    dht_ok=false;
+    //Serial.println("Time out error"); 
+    break;
+  default:
+    dht_ok=false;
+    //Serial.println("Unknown error"); 
+    break;
+  }
+  if(dht_ok)
+  {
+    hum=(int)DHT11.humidity;
+    tem=(int)DHT11.temperature;
+  }
 }
+
